@@ -3,7 +3,8 @@
 API team too busy? Can't test your UI because you just need that one field changed? Stop waiting and start tampering.
 
 ```bash
-npm install -g api-tampering
+npm install -D api-tampering  # For your whole team
+npm install -g api-tampering  # Just for you
 ```
 
 ----
@@ -29,8 +30,6 @@ The goal of this project is to prevent a UI developer from being blocked from te
 **This is a tool for when the UI team is ahead of the API team.**
 
 I want to empower a UI developer to tamper with an API response and specify the conditions for their code to run in freely, so they can move on with their work instead of being blocked by another team.
-
-Don't get blocked by your API ever again. Just bend it to your will from time to time. Everyone will be happier.
 
 Use cases include:
 
@@ -58,53 +57,80 @@ This magic comes in two pieces:
 
   This file determines which requests are tampered with, what data will be injected into the responses, and where that data will be injected in the JSON tree. See **Configuration** below for more on this file.
 
-## Setup
+And that's it! Because it is implemented as a proxy at the browser level, `api-tampering` requires no changes to your UI code or to your API code, and it can be used with any API server, locally or on the internet.
 
+## Setup
 
 1. Decide how you will install and use the `api-tampering` package.
 
-    * **Globally.** This will install it just for you, for any project, and requires no modifications to your `package.json`. You might want to do this if you plan on putting the config file in your `.gitignore` and only using the proxy a little bit.
-
+    * **Globally.** This will install it **just for you, for any project**, and requires no modifications to your `package.json`. You might want to do this if you plan on putting the config file in your `.gitignore` and only using the proxy a little bit.
         * Install with `npm i -g api-tampering`
+        * Create the `api-tampering.js` file with `api-tampering config`
+        * Start the proxy with `api-tampering start` or `node api-tampering.js`
 
-        * Use with `api-tampering proxy`
-
-    * **As a devDependency.** This will add some new npm scripts to your `package.json`, and install it for anyone who runs `npm install` in your project. You might need this if things are really behind and your whole team wants to get tampering.
-        
+    * **As a devDependency.** This will add some new npm scripts to your `package.json`, and install it **for everyone who runs `npm install` in your project**. You might need this if things are really behind and your whole team wants to get tampering.
         * Install with `npm i -D api-tampering`
-        * Use with `npm run proxy` or `yarn proxy`
+        * Create the `api-tampering.js` file with `npm run tampering-config` or `yarn tampering-config`
+        * Start the proxy with `npm run tampering` or `yarn tampering` or `node api-tampering.js`
 
-    * **In your node_modules directory only.** This is just for you, and will not modify your project or your global namespace in any way, but has no command shortcuts.
-
+    * **In your node_modules directory only.** This is **just for you, and will not modify your project or your global namespace** in any way.
         * Install with `npm i --no-save api-tampering`
-        * Use with `./node_modules/api-tampering/proxy`
+        * Create the `api-tampering.js` file with `./node_modules/api-tampering/config`
+        * Start the proxy with `./node_modules/api-tampering/start` or `node api-tampering.js`
 
-    You should not simply run `npm install api-tampering`, which will add it as a regular dependency for all consumers. I don't think this would do anything bad, it's just not necessary. use `-g` or `-D` or `--no-save`.
+    You should not simply run `npm install api-tampering`, which will add it as a regular dependency for all consumers. I don't think this would do anything bad, it's just not necessary. use `-D` or `-g` or `--no-save`.
 
-## Usage
+2. Start the proxy for the first time, and it may give you some first-time setup prompts.
 
-1. Configure rules in `api-tampering.json` (see Configuration).
+## How to Use
 
-2. Run the Proxy server and configure your browser.
+1. Configure rules in `api-tampering.js` at the root of your repo (see Configuration). The `config` script will create this file for you if it doesn't exist, and/or offer to paste some example rules into it for you.
 
-    Depending on how you installed api-tampering, use one of the proxy start commands:
+2. Run the proxy server and configure your browser.
 
-    * Global: `api-tampering proxy`
+    Depending on how you installed api-tampering, use one of the proxy's start commands:
+
+    * Global: `api-tampering start`
     * devDependency with npm: `npm run tampering`
     * devDependency with yarn: `yarn tampering`
-    * no dependency: `./node_modules/api-tampering/proxy`
+    * no dependency: `./node_modules/api-tampering/start`
 
     This will run the HTTP proxy server in the foreground. You can press `Ctrl`+`C` in the terminal to stop the server, but leave it running for now.
 
-    When the proxy starts up, it will also open a tab in your browser with instructions to configure your proxy settings to use the api-tampering proxy.
+    When the proxy starts up, it will also open a tab in your browser with instructions for configuring your browser's proxy settings.
 
 3. Use your browser. Your tampering rules should take effect and inject data into API responses when your browser makes matching requests.
 
-4. If you change the `api-tampering.json` file, you'll need to restart the tampering proxy server for your new rules to take effect. You can just press `Ctrl`+`C` and `npm run tampering` (or equivalent) again. 
+4. If you change the `api-tampering.js` file, you'll need to restart the proxy for your new rules to take effect. You can just press `Ctrl`+`C` and `node api-tampering.js` (or whichever alias you're using) again. 
 
     * [NOTE: fork me if you want to help remove this requirement! I don't want to reevaluate the config file on every HTTP request, but I want to listen to file changes and restart the proxy automatically, or load rules into the running proxy.]
 
-5. When you are done, be sure to turn off the proxy settings in your browser. Otherwise, the browser will be unable to connect to the internet when the tampering proxy server isn't running.
+5. When you are done, be sure to turn off the proxy settings in your browser. Otherwise, the browser will be unable to connect to the internet when the tampering proxy server isn't running. For convenience, it's useful to set up api-tampering in a browser you don't use often (maybe Opera, or Safari) and leave it that way, so you don't disrupt your day to day browsing if you forget to change the settings.
+
+## Configuration
+
+TODO: Mike is working on the config file format, and thus this section's guts. Come back and read this part later.
+
+Thoughts so far: I was going to use a static `api-tampering.json` file for configuration, requiring an exact specification of the JSON to be injected to be predetermined. I'm instead going to make `api-tampering.js` a script, rather than an object.
+
+I'm thinking `api-tampering.js` might look something like:
+
+```js
+import proxy from 'api-tampering';
+
+proxy.intercept('/some/path', (request, response) => {
+  // Some logic here
+  return { ...response,
+    someProperty: { ...response.someProperty,
+      someNewThing: "whoa, this will get injected into the browser"
+    }
+  };
+});
+
+proxy.intercept('/some/other/path', (request, response) => ({ /* ... */ }));
+
+// Etc.
+```
 
 ----
 
@@ -126,3 +152,7 @@ This tool is only for REST APIs that respond with JSON-structured data. Currentl
 I would really like to add things like GraphQL support and a UI for editing your config file more quickly.
 
 ![Help Me Help You](https://media.giphy.com/media/uRb2p09vY8lEs/giphy.gif)
+
+----
+
+Written with ❤️ by [Mike Turley](https://github.com/mturley) for [Red Hat UXD](https://www.redhat.com/en/about/product-design).
