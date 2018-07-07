@@ -1,0 +1,19 @@
+{
+  "name": "api-tampering",
+  "version": "1.0.0",
+  "description": "API team too busy? Can't test your UI because you just need that one field changed? Stop waiting, start tampering.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mturley/api-tampering.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mturley/api-tampering/issues"
+  },
+  "homepage": "https://github.com/mturley/api-tampering#readme"
+}
