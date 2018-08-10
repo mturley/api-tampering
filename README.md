@@ -5,6 +5,7 @@ API team too busy? Can't test your UI because you just need that one field chang
 ```bash
 npm install -D api-tampering  # For your whole team
 npm install -g api-tampering  # Just for you
+npx api-tampering             # Just for now
 ```
 
 ----
@@ -101,7 +102,7 @@ And that's it! Because it is implemented as a proxy at the browser level, `api-t
 
 3. Use your browser. Your tampering rules should take effect and inject data into API responses when your browser makes matching requests.
 
-4. If you change the `api-tampering.js` file, you'll need to restart the proxy for your new rules to take effect. You can just press `Ctrl`+`C` and `node api-tampering.js` (or whichever alias you're using) again. 
+4. If you change the `api-tampering.js` file, you'll need to restart the proxy for your new rules to take effect. You can just press `Ctrl`+`C` and `node api-tampering.js` (or whichever alias you're using) again.
 
     * [NOTE: fork me if you want to help remove this requirement! I don't want to reevaluate the config file on every HTTP request, but I want to listen to file changes and restart the proxy automatically, or load rules into the running proxy.]
 

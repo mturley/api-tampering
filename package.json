@@ -1,14 +1,19 @@
 {
   "name": "api-tampering",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "API team too busy? Can't test your UI because you just need that one field changed? Stop waiting, start tampering.",
   "main": "index.js",
   "scripts": {
     "install": "node bin/post-install.js",
+    "clean": "rimraf ./dist",
+    "clean:build": "npm run clean; npm run build",
+    "build": "./node_modules/.bin/babel  ./src --experimental --source-maps-inline -d ./dist",
+    "build:main": "npm run clean:build; npm run main",
+    "main": "node dist/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "api-tampering": "bin/main.js"
+    "api-tampering": "dist/main.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +26,13 @@
   },
   "homepage": "https://github.com/mturley/api-tampering#readme",
   "dependencies": {
-    "jsonfile": "^4.0.0"
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "rimraf": "^2.6.2"
+  },
+  "babel": {
+    "presets": [
+      "env"
+    ]
   }
 }
