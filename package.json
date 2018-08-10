@@ -1,15 +1,16 @@
 {
   "name": "api-tampering",
-  "version": "1.0.14",
+  "version": "1.0.17",
   "description": "API team too busy? Can't test your UI because you just need that one field changed? Stop waiting, start tampering.",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "install": "node bin/post-install.js",
-    "clean": "rimraf ./dist",
-    "clean:build": "npm run clean; npm run build",
-    "build": "./node_modules/.bin/babel  ./src --experimental --source-maps-inline -d ./dist",
-    "build:main": "npm run clean:build; npm run main",
-    "main": "node dist/main.js",
+    "install": "node ./bin/post-install.js",
+    "build": "rimraf ./dist && ./node_modules/.bin/babel ./src --experimental --source-maps-inline -d ./dist",
+    "main": "node ./dist/main.js",
+    "lint": "./node_modules/.bin/eslint ./src",
+    "lint:fix": "./node_modules/.bin/eslint ./src --fix",
+    "build:main": "npm run lint && npm run build && npm run main",
+    "build:publish": "npm run lint && npm run build && npm publish",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
@@ -26,7 +27,7 @@
   },
   "homepage": "https://github.com/mturley/api-tampering#readme",
   "dependencies": {
-    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
     "babel-preset-env": "^1.7.0",
     "rimraf": "^2.6.2"
   },
@@ -34,5 +35,11 @@
     "presets": [
       "env"
     ]
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^13.0.0",
+    "eslint-plugin-import": "^2.13.0"
   }
 }
